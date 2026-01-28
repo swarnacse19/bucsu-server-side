@@ -25,5 +25,10 @@ router.get("/", async (req, res) => {
   res.send(users);
 });
 
+router.get("/:email", async (req, res) => {
+  const email = req.params.email;
+  const user = await usersCollection.findOne({ email });
+  res.send(user);
+});
 
 module.exports = router;
