@@ -20,4 +20,10 @@ router.post("/", async (req, res) => {
   res.send(result);
 });
 
+router.get("/", async (req, res) => {
+  const users = await usersCollection.find().toArray();
+  res.send(users);
+});
+
+
 module.exports = router;
