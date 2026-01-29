@@ -47,13 +47,13 @@ router.get("/", async (req, res) => {
 });
 
 
-// router.get("/:id", async (req, res) => {
-//   const id = req.params.id;
-//   const election = await electionsCollection.findOne({
-//     _id: new ObjectId(id),
-//   });
-//   res.send(election);
-// });
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  const election = await electionsCollection.findOne({
+    _id: new ObjectId(id),
+  });
+  res.send(election);
+});
 
 
 // router.patch("/:id", async (req, res) => {
@@ -67,6 +67,34 @@ router.get("/", async (req, res) => {
 
 //   res.send(result);
 // });
+
+// router.patch("/:id/start", async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const result = await electionsCollection.updateOne(
+//       { _id: new ObjectId(id) },
+//       {
+//         $set: {
+//           status: "active",
+//           startedAt: new Date(),
+//         },
+//       }
+//     );
+
+//     if (result.matchedCount === 0) {
+//       return res.status(404).send({ message: "Election not found" });
+//     }
+
+//     res.send({
+//       message: "Election started successfully",
+//       updated: true,
+//     });
+//   } catch (error) {
+//     res.status(500).send({ message: "Failed to start election" });
+//   }
+// });
+
 
 
 router.delete("/:id", async (req, res) => {
