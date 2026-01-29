@@ -86,6 +86,30 @@ router.get("/ongoing", async (req, res) => {
   }
 });
 
+router.get("/upcoming", async (req, res) => {
+  try {
+    const now = new Date();
+
+    const upcomingElections = await electionsCollection
+      .aggregate([
+        {
+          $addFields: {
+            startDateObj: { $toDate: "$startDate" },
+          },
+        },
+        {
+          $match: {
+            startDateObj: { $gt: now },
+          },
+        },
+      ])
+      .toArray();
+
+    res.send(upcomingElections);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch upcoming elections" });
+  }
+});
 
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
