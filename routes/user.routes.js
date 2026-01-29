@@ -20,4 +20,15 @@ router.post("/", async (req, res) => {
   res.send(result);
 });
 
+router.get("/", async (req, res) => {
+  const users = await usersCollection.find().toArray();
+  res.send(users);
+});
+
+router.get("/:email", async (req, res) => {
+  const email = req.params.email;
+  const user = await usersCollection.findOne({ email });
+  res.send(user);
+});
+
 module.exports = router;
