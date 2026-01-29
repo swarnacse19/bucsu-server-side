@@ -35,22 +35,19 @@ router.post("/", async (req, res) => {
   }
 });
 
-// router.get("/", async (req, res) => {
-//   const limit = parseInt(req.query.limit) || 0;
+router.get("/", async (req, res) => {
+  const limit = parseInt(req.query.limit) || 0;
 
-//   const notices = await noticesCollection
-//     .find()
-//     .sort({ createdAt: -1 })
-//     .limit(limit)
-//     .toArray();
+  const notices = await noticesCollection
+    .find()
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .toArray();
 
-//   res.send(notices);
-// });
+  res.send(notices);
+});
 
-// /**
-//  * ✅ GET SINGLE NOTICE
-//  * GET /notices/:id
-//  */
+
 // router.get("/:id", async (req, res) => {
 //   const id = req.params.id;
 
@@ -61,10 +58,7 @@ router.post("/", async (req, res) => {
 //   res.send(notice);
 // });
 
-// /**
-//  * ✅ DELETE NOTICE
-//  * DELETE /notices/:id
-//  */
+
 // router.delete("/:id", async (req, res) => {
 //   const id = req.params.id;
 
