@@ -41,10 +41,10 @@ router.post("/", async (req, res) => {
 });
 
 
-// router.get("/", async (req, res) => {
-//   const elections = await electionsCollection.find().toArray();
-//   res.send(elections);
-// });
+router.get("/", async (req, res) => {
+  const elections = await electionsCollection.find().toArray();
+  res.send(elections);
+});
 
 
 // router.get("/:id", async (req, res) => {
