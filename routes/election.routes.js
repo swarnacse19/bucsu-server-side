@@ -47,15 +47,6 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get("/:id", async (req, res) => {
-  const id = req.params.id;
-  const election = await electionsCollection.findOne({
-    _id: new ObjectId(id),
-  });
-  res.send(election);
-});
-
-
 // router.patch("/:id", async (req, res) => {
 //   const id = req.params.id;
 //   const update = req.body;
@@ -68,34 +59,41 @@ router.get("/:id", async (req, res) => {
 //   res.send(result);
 // });
 
-// router.patch("/:id/start", async (req, res) => {
-//   try {
-//     const { id } = req.params;
+router.get("/ongoing", async (req, res) => {
+  try {
+    const now = new Date();
 
-//     const result = await electionsCollection.updateOne(
-//       { _id: new ObjectId(id) },
-//       {
-//         $set: {
-//           status: "active",
-//           startedAt: new Date(),
-//         },
-//       }
-//     );
+    const ongoingElections = await electionsCollection
+      .aggregate([
+        {
+          $addFields: {
+            startDateObj: { $toDate: "$startDate" },
+            endDateObj: { $toDate: "$endDate" },
+          },
+        },
+        {
+          $match: {
+            startDateObj: { $lte: now },
+            endDateObj: { $gte: now },
+          },
+        },
+      ])
+      .toArray();
 
-//     if (result.matchedCount === 0) {
-//       return res.status(404).send({ message: "Election not found" });
-//     }
-
-//     res.send({
-//       message: "Election started successfully",
-//       updated: true,
-//     });
-//   } catch (error) {
-//     res.status(500).send({ message: "Failed to start election" });
-//   }
-// });
+    res.send(ongoingElections);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch ongoing elections" });
+  }
+});
 
 
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  const election = await electionsCollection.findOne({
+    _id: new ObjectId(id),
+  });
+  res.send(election);
+});
 
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
