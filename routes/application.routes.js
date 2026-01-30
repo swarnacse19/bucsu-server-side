@@ -20,9 +20,28 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const applications = await applicationsCollection.find().toArray();
+  try {
+    const { status, email } = req.query;
 
-  res.send(applications);
+    let query = {};
+
+    if (status && status !== "all") {
+      query.status = status;
+    }
+
+    if (email) {
+      query.email = email;
+    }
+
+    const applications = await applicationsCollection
+      .find(query)
+      .sort({ appliedAt: -1 })
+      .toArray();
+
+    res.send(applications);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch applications" });
+  }
 });
 
 module.exports = router;
