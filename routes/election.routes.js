@@ -47,17 +47,17 @@ router.get("/", async (req, res) => {
 });
 
 
-// router.patch("/:id", async (req, res) => {
-//   const id = req.params.id;
-//   const update = req.body;
+router.patch("/:id", async (req, res) => {
+  const id = req.params.id;
+  const update = req.body;
 
-//   const result = await electionsCollection.updateOne(
-//     { _id: new ObjectId(id) },
-//     { $set: update }
-//   );
+  const result = await electionsCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: update }
+  );
 
-//   res.send(result);
-// });
+  res.send(result);
+});
 
 router.get("/ongoing", async (req, res) => {
   try {
