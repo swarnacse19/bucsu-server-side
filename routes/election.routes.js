@@ -111,6 +111,32 @@ router.get("/upcoming", async (req, res) => {
   }
 });
 
+router.get("/ended", async (req, res) => {
+  try {
+    const now = new Date();
+
+    const endedElections = await electionsCollection
+      .aggregate([
+        {
+          $addFields: {
+            endDateObj: { $toDate: "$endDate" },
+          },
+        },
+        {
+          $match: {
+            endDateObj: { $lt: now },
+          },
+        },
+      ])
+      .toArray();
+
+    res.send(endedElections);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch ended elections" });
+  }
+});
+
+
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   const election = await electionsCollection.findOne({
