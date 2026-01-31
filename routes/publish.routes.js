@@ -41,6 +41,21 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:electionId", async (req, res) => {
+  try {
+    const { electionId } = req.params;
+
+    const result = await resultsCollection.findOne({ electionId });
+
+    if (!result) {
+      return res.status(404).send({ message: "Result not found" });
+    }
+
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch result" });
+  }
+});
 
 router.get("/check/:electionId", async (req, res) => {
   const { electionId } = req.params;
