@@ -9,6 +9,7 @@ const applicationRoutes = require('./routes/application.routes');
 const candidatesRoutes = require('./routes/candidates.routes');
 const checkRoutes = require('./routes/check.routes');
 const votesRoutes = require('./routes/votes.routes');
+const countRoutes = require('./routes/count.routes');
 
 const { connectDB } = require("./config/db");
 const app = express();
@@ -25,6 +26,7 @@ app.use("/candidate-applications", applicationRoutes);
 app.use("/candidates", candidatesRoutes);
 app.use("/check", checkRoutes);
 app.use("/votes", votesRoutes);
+app.use("/count", countRoutes);
 
 app.get("/", (req, res) => {
   res.send("BUCSU server side is running");
