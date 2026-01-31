@@ -23,6 +23,25 @@ router.post("/publish", async (req, res) => {
   res.send({ success: true });
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const results = await resultsCollection
+      .find({})
+      .project({
+        electionId: 1,
+        electionName: 1,
+        publishedAt: 1,
+      })
+      .sort({ publishedAt: -1 })
+      .toArray();
+
+    res.send(results);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch results" });
+  }
+});
+
+
 router.get("/check/:electionId", async (req, res) => {
   const { electionId } = req.params;
 
