@@ -23,4 +23,17 @@ router.post("/publish", async (req, res) => {
   res.send({ success: true });
 });
 
+router.get("/check/:electionId", async (req, res) => {
+  const { electionId } = req.params;
+
+  const result = await resultsCollection.findOne({ electionId });
+
+  if (result) {
+    res.send({ counted: true });
+  } else {
+    res.send({ counted: false });
+  }
+});
+
+
 module.exports = router;
