@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
     await votesCollection.insertOne({
       electionId,
       userId: encryptedUserId,
-      votes, // [{ position, studentId }]
+      votes, 
       createdAt: new Date(),
     });
 
