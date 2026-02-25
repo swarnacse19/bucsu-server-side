@@ -52,5 +52,83 @@ router.post("/", async (req, res) => {
     }
 });
 
+router.get("/", async (req, res) => {
+    try {
+        const { status, email, electionId } = req.query;
+
+        let query = {};
+
+        if (status && status !== "all") {
+            query.status = status;
+        }
+
+        if (email) {
+            query.email = email;
+        }
+
+        if (electionId) {
+            query.electionId = electionId;
+        }
+
+        const applications = await voterApplicationsCollection
+            .find(query)
+            .sort({ appliedAt: -1 })
+            .toArray();
+
+        res.send(applications);
+    } catch (error) {
+        res.status(500).send({ message: "Failed to fetch applications" });
+    }
+});
+
+router.patch("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!["approved", "rejected"].includes(status)) {
+            return res.status(400).send({ message: "Invalid status value" });
+        }
+
+        const application = await voterApplicationsCollection.findOne({ _id: new ObjectId(id) });
+        if (!application) {
+            return res.status(404).send({ message: "Application not found" });
+        }
+
+        
+        if (status === "approved") {
+           
+            const userUpdateResult = await usersCollection.updateOne(
+                { email: application.email },
+                {
+                    $addToSet: { approvedElections: application.electionId },
+                    $set: { role: "voter" } 
+                }
+            );
+
+            if (userUpdateResult.matchedCount === 0) {
+                
+            }
+        }
+
+        const result = await voterApplicationsCollection.updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: {
+                    status,
+                    reviewedAt: new Date(),
+                },
+            }
+        );
+
+        res.send({
+            success: true,
+            modifiedCount: result.modifiedCount,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Failed to update application status" });
+    }
+});
 
 module.exports = router;
