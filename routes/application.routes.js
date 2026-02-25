@@ -11,6 +11,19 @@ const applicationsCollection = client
 router.post("/", async (req, res) => {
   const data = req.body;
 
+  if (!data.electionId) {
+    return res.status(400).send({ message: "Election ID is required" });
+  }
+
+  const existing = await applicationsCollection.findOne({
+    email: data.email,
+    electionId: data.electionId,
+  });
+
+  if (existing) {
+    return res.status(400).send({ message: "You have already applied for this election." });
+  }
+
   const result = await applicationsCollection.insertOne(data);
 
   res.send({
@@ -21,7 +34,7 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { status, email } = req.query;
+    const { status, email, electionId } = req.query;
 
     let query = {};
 
@@ -31,6 +44,10 @@ router.get("/", async (req, res) => {
 
     if (email) {
       query.email = email;
+    }
+
+    if (electionId) {
+      query.electionId = electionId;
     }
 
     const applications = await applicationsCollection
