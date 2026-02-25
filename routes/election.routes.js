@@ -12,20 +12,29 @@ router.post("/", async (req, res) => {
   try {
     const election = req.body;
 
-    // basic validation
     if (
       !election.title ||
       !election.description ||
       !election.type ||
       !election.startDate ||
-      !election.endDate ||
-      !Array.isArray(election.positions)
+      !election.endDate
     ) {
       return res.status(400).send({ message: "Missing required fields" });
     }
 
-    // default fields
-    election.status = "draft"; 
+    if (['district', 'department', 'cr'].includes(election.type)) {
+      if (!Array.isArray(election.positions) || election.positions.length === 0) {
+        return res.status(400).send({ message: "Positions are required for this election type" });
+      }
+    }
+
+    if (election.type === 'custom') {
+      if (!Array.isArray(election.customStructure) || election.customStructure.length === 0) {
+        return res.status(400).send({ message: "Custom structure is required for custom elections" });
+      }
+    }
+
+    election.status = "draft";
     election.createdAt = new Date();
 
     const result = await electionsCollection.insertOne(election);
@@ -42,7 +51,7 @@ router.post("/", async (req, res) => {
 
 
 router.get("/", async (req, res) => {
-  const elections = await electionsCollection.find().toArray();
+  const elections = await electionsCollection.find().sort({ createdAt: -1 }).toArray();
   res.send(elections);
 });
 
@@ -126,6 +135,9 @@ router.get("/ended", async (req, res) => {
           $match: {
             endDateObj: { $lt: now },
           },
+        },
+        {
+          $sort: { createdAt: -1 },
         },
       ])
       .toArray();
