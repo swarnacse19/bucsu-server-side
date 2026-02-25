@@ -74,5 +74,4 @@ router.get("/check/:electionId", async (req, res) => {
   }
 });
 
-
 module.exports = router;
