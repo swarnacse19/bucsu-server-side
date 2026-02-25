@@ -7,20 +7,25 @@ const resultsCollection = client
   .collection("results");
 
 router.post("/publish", async (req, res) => {
-  const resultData = req.body;
+  try {
+    const resultData = req.body;
 
-  const exists = await resultsCollection.findOne({
-    electionId: resultData.electionId,
-  });
+    const exists = await resultsCollection.findOne({
+      electionId: resultData.electionId,
+    });
 
-  if (exists) {
-    return res.status(400).send({ message: "Result already published" });
+    if (exists) {
+      return res.status(400).send({ message: "Result already published" });
+    }
+
+    resultData.publishedAt = new Date();
+
+    await resultsCollection.insertOne(resultData);
+    res.send({ success: true });
+  } catch (error) {
+    console.error("Publish error:", error);
+    res.status(500).send({ message: "Failed to publish result" });
   }
-
-  resultData.publishedAt = new Date();
-
-  await resultsCollection.insertOne(resultData);
-  res.send({ success: true });
 });
 
 router.get("/", async (req, res) => {
