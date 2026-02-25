@@ -32,6 +32,16 @@ router.get("/:email", async (req, res) => {
   res.send(user);
 });
 
+router.patch("/:email", async (req, res) => {
+  const email = req.params.email;
+  const updatedData = req.body;
+  const result = await usersCollection.updateOne(
+    { email },
+    { $set: updatedData }
+  );
+  res.send(result);
+});
+
 router.delete("/:id", async (req, res) => {
   const id = new ObjectId(req.params.id);
   const result = await usersCollection.deleteOne({ _id: id });
